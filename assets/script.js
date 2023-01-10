@@ -128,7 +128,16 @@ function GetWeatherByCoords(lat, lon, state) {
         //grab and clear output area
         var mainCard = $('#current-area');
         mainCard.children().remove();
-        //TODO forecast cards and whatnot
+        var forecastArea = $('#forecast-area');
+        forecastArea.children().remove();
+        var forecastCards = [$('<div>'), $('<div>'), $('<div>'), $('<div>'), $('<div>')];
+
+        for(var i = 1; i <= forecastCards.length; i++) {
+            var date = $('<h3>');
+            
+
+        }
+
 
         //initialize page elements for displaying data
         var city = $('<h2>');
@@ -144,6 +153,11 @@ function GetWeatherByCoords(lat, lon, state) {
         } else {
             nameOutput += ", " + data.city.country;
         }
+
+        //TODO use built-in Date object? figure out time zone stuff
+        //add date after city name
+        nameOutput += "(" + data.list[0].dt_txt + ")";
+
         //set weather icon and add it to name
         city.text(nameOutput);
         weatherIcon.attr('src','http://openweathermap.org/img/wn/' + data.list[0].weather[0].icon + '.png');
@@ -245,4 +259,8 @@ function AddHistoryButton(removecount) {
             break;
         }
     }
+}
+
+function GetRegionalDate(date, offset) {
+
 }
