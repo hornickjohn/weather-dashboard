@@ -33,7 +33,6 @@ header img {
     top:15px;
 }
 header img:hover {
-    filter:brightness(130%);
     cursor:pointer;
 }
 
@@ -51,7 +50,7 @@ main {
     width:75%;
 }
 
-#search-form>* {
+#search-form>*, .left-section>*:not(form) {
     width:100%;
     font-size:150%;
     margin:10px 0;
@@ -78,6 +77,19 @@ main {
 
 .forecast-card {
     width:15%;
+}
+
+button {
+    background-color:var(--primary);
+    color:var(--primaryText);
+}
+button.secondary {
+    background-color:var(--secondary);
+    color:var(--secondaryText);
+}
+
+.hover:hover {
+    filter:brightness(130%);
 }
 
 .displayed-menu {

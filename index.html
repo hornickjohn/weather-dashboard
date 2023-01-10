@@ -23,17 +23,16 @@
         crossorigin="anonymous">
     </script>
 
-    <!--TODO: link icon image here 25x25-->
-    <link rel="icon" href="">
+    <link rel="icon" href="./assets/images/icon.png">
     <title>Weather Dashboard</title>
 </head>
 <body>
     <header>
         <h1>Weather Dashboard</h1>
-        <img id="settings-icon" src="./assets/images/cog.png">
-        <!--Settings menu modal-thing-->
+        <img id="settings-icon" src="./assets/images/cog.png" alt="Settings Icon" class="hover">
+        <!--Settings menu popup-->
         <div id="settings-menu" class="hidden-menu">
-            <input id="imperial-radio" type="radio" name="units"></input><label for="imperial-radio">Fahrenheit/MPH</label>
+            <input id="imperial-radio" type="radio" name="units" ></input><label for="imperial-radio">Fahrenheit/MPH</label>
             <input id="metric-radio" type="radio" name="units"></input><label for="metric-radio">Celsius/KPH</label>
         </div>
     </header>
@@ -42,13 +41,14 @@
             <h2>Search for a City:</h2>
             <form id="search-form" class="mx-1">
                 <input id="search-input" name="city" placeholder="e.g. Pittsburgh" />
-                <button id="search-submit" type="submit">Search</button>
+                <button id="search-submit" type="submit" class="hover">Search</button>
             </form>
             <hr>
         </div>
         <div class="right-section">
             <div id="current-area">
-                
+                <h2>Welcome!</h2>
+                <p>Search for any city and see its current and forecasted weather here!</p>
             </div>
             <div id="forecast-area">
                 
