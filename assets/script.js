@@ -1,10 +1,8 @@
-const maxLocationsSaved = 3;
+const maxLocationsSaved = 10;
 const key = '9e0786cb1b15854a6a708750ddfc20aa';
 
 var metric = false;
 var historyData = [];
-
-Load();
 
 //Settings button displays/hides the settings window
 $('#settings-icon').on('click', function() {
@@ -55,7 +53,6 @@ function GetWeatherByName (cityName) {
         return response.json();
     })
     .then(function (data) {
-        console.log(data);
         //if city found
         if(data.length > 0) {
             //check if search contains a state name in the results
@@ -130,20 +127,40 @@ function GetWeatherByCoords(lat, lon, state) {
         mainCard.children().remove();
         var forecastArea = $('#forecast-area');
         forecastArea.children().remove();
-        var forecastCards = [$('<div>'), $('<div>'), $('<div>'), $('<div>'), $('<div>')];
 
-        for(var i = 1; i <= forecastCards.length; i++) {
-            var date = $('<h3>');
-            
+        for(var i = 0; i < 5; i++) {
+            //find same time in the next day by traversing 8 3-hour periods
+            //each forecasted day will grab data from 3 hours earlier than today's
+            //data because the API does not return data for exactly a full 5 days after
+            var dataIndex = ((i+1) * 8) - 1;
 
+            //create card to display day's data
+            var forecastCard = $('<div>');
+            forecastCard.addClass('forecast-card');
+
+            //create date display for card and add it
+            var dateOut = $('<h3>');
+            dateOut.text(GetRegionalDate(data.list[dataIndex].dt_txt, data.city.timezone));
+            forecastCard.append(dateOut);
+
+            //create icon display for card and add it
+            var iconOut = $('<img>');
+            iconOut.attr('style','display:block;');
+            iconOut.attr('src','http://openweathermap.org/img/wn/' + data.list[dataIndex].weather[0].icon + '.png');
+            iconOut.attr('alt',data.list[dataIndex].weather[0].description);
+            forecastCard.append(iconOut);
+
+            //grab output paragraphs and add them
+            var paras = GetWeatherOutput(data.list[dataIndex]);
+            forecastCard.append(paras[0], paras[1], paras[2]);
+
+            //add card to page
+            forecastArea.append(forecastCard);
         }
 
 
         //initialize page elements for displaying data
         var city = $('<h2>');
-        var temp = $('<p>');
-        var wind = $('<p>');
-        var hum = $('<p>');
         var weatherIcon = $('<img>');
 
         //set name output based on location
@@ -154,39 +171,21 @@ function GetWeatherByCoords(lat, lon, state) {
             nameOutput += ", " + data.city.country;
         }
 
-        //TODO use built-in Date object? figure out time zone stuff
         //add date after city name
-        nameOutput += "(" + data.list[0].dt_txt + ")";
+        //adds date from 3 hrs before data, to ensure it is displaying closer to current date and 
+        //to line it up with forecast data
+        nameOutput += " (" + GetRegionalDate(data.list[0].dt_txt, data.city.timezone - (3*3600)) + ") ";
 
         //set weather icon and add it to name
         city.text(nameOutput);
         weatherIcon.attr('src','http://openweathermap.org/img/wn/' + data.list[0].weather[0].icon + '.png');
         city.append(weatherIcon);
 
-        //set temperature output based on metric/imperial
-        var temperature = data.list[0].main.temp + " °";
-        if(metric) {
-            temperature += "C";
-        } else {
-            temperature += "F";
-        }
-        temp.text("Temp: " + temperature);
-
-        //set wind speed output based on metric/imperial
-        var windSpeed = data.list[0].wind.speed;
-        var windUnit = " MPH";
-        if(metric) {
-            windSpeed *= 3.6;
-            windSpeed = Math.round(windSpeed * 100) / 100;
-            windUnit = " KPH";
-        }
-        wind.text("Wind: " + windSpeed + windUnit);
-
-        //set humidity output
-        hum.text("Humidity: " + data.list[0].main.humidity + "%");
+        //grab output paragraphs
+        var paragraphs = GetWeatherOutput(data.list[0]);
 
         //add elements to page
-        mainCard.append(city, temp, wind, hum);
+        mainCard.append(city, paragraphs[0], paragraphs[1], paragraphs[2]);
   });
 }
 
@@ -210,6 +209,14 @@ function Fail(code) {
 
 function Load() {
     var loadedData = JSON.parse(localStorage.getItem('history'));
+
+    //get unit selection from storage, if none exists default to imperial units
+    metric = false;
+    metric = localStorage.getItem('units') === "metric";
+
+    //set radio buttons in settings window based on selection
+    $('#imperial-radio').prop('checked',!metric)
+    $('#metric-radio').prop('checked',metric);
     
     //if we have saved data, loop through 
     if(loadedData !== null) {
@@ -222,14 +229,6 @@ function Load() {
         var lastData = historyData[historyData.length - 1];
         GetWeatherByCoords(lastData.latitude, lastData.longitude, lastData.cityParent);
     }
-
-    //get unit selection from storage, if none exists default to imperial units
-    metric = false;
-    metric = localStorage.getItem('units') === "metric";
-
-    //set radio buttons in settings window based on selection
-    $('#imperial-radio').prop('checked',!metric)
-    $('#metric-radio').prop('checked',metric);
 }
 
 //creates history button in search area for most recently searched city
@@ -261,6 +260,45 @@ function AddHistoryButton(removecount) {
     }
 }
 
-function GetRegionalDate(date, offset) {
-
+//translate date to regional time for destination, and format it - return as string
+//offset is seconds from passed date to regional time zone
+function GetRegionalDate(dt_text, offset) {
+    var dataDate = new Date(dt_text);
+    dataDate.setSeconds(dataDate.getSeconds() + offset);
+    return (dataDate.getMonth()+1) + "/" + dataDate.getDate() + "/" + dataDate.getFullYear();
 }
+
+//returns array of three new paragraph jquery elements that, in order, display
+//temperature, wind, and humidity of given openweathermap data list
+function GetWeatherOutput(dataList) {
+    var temp = $('<p>');
+    var wind = $('<p>');
+    var hum = $('<p>');
+
+    //set temperature output based on metric/imperial
+    var temperature = dataList.main.temp + " °";
+    if(metric) {
+        temperature += "C";
+    } else {
+        temperature += "F";
+    }
+    temp.text("Temp: " + temperature);
+
+    //set wind speed output based on metric/imperial
+    var windSpeed = dataList.wind.speed;
+    var windUnit = " MPH";
+    if(metric) {
+        windSpeed *= 3.6;
+        windSpeed = Math.round(windSpeed * 100) / 100;
+        windUnit = " KPH";
+    }
+    wind.text("Wind: " + windSpeed + windUnit);
+
+    //set humidity output
+    hum.text("Humidity: " + dataList.main.humidity + "%");
+
+    return [temp, wind, hum];
+}
+
+//On first page load, load up data
+Load();

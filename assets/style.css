@@ -6,6 +6,7 @@
     --secondary: lightgrey;
     --secondaryText:black;
     --headerHeight: 100px;
+    --headerHeightSmallScreen:200px;
 }
 
 * {
@@ -14,10 +15,12 @@
     box-sizing: border-box;
 }
 
+/*Styling for header section, including settings button*/
 header {
     text-align: center;
     color:var(--primaryText);
     background-color:var(--primary);
+    font-family:var(--mainFont);
     height:var(--headerHeight);
 }
 header h1 {
@@ -25,7 +28,6 @@ header h1 {
     font-size:300%;
     line-height:var(--headerHeight);
 }
-
 header img {
     display:block;
     position:absolute;
@@ -36,26 +38,32 @@ header img:hover {
     cursor:pointer;
 }
 
+/*Flex behavior for stacking the screen at smaller sizes, overall styles for major semantic parts of page*/
 main {
     display:flex;
+    flex-wrap:wrap;
 }
 .left-section {
-    width:25%;
-    margin:15px;
+    width:23%;
+    margin:1%;
     font-size:150%;
     color:var(--primary);
+    font-family:var(--mainFont);
 }
 .right-section {
-    margin:15px;
-    width:75%;
+    margin:1%;
+    width:73%;
+    font-family:var(--mainFont);
 }
 
+/*Styling for search form*/
 #search-form>*, .left-section>*:not(form) {
     width:100%;
     font-size:150%;
     margin:10px 0;
 }
 
+/*Styling for current weather data*/
 #current-area {
     border:5px solid black;
     border-radius:20px;
@@ -70,28 +78,44 @@ main {
     font-size:150%;
 }
 
+/*Styling for forecast data*/
 #forecast-area {
     display:flex;
     justify-content:space-around;
+    margin-top:15px;
 }
-
 .forecast-card {
-    width:15%;
+    width:18%;
+    font-size:120%;
+    background-color: var(--primary);
+    color:var(--primaryText);
+    padding:10px;
+    border-radius:20px;
+}
+.forecast-card>*:not(h3) {
+    font-family:var(--secondaryFont);
+}
+.forecast-card>p {
+    margin:5px 0;
 }
 
+/*Style buttons, secondary-class buttons get secondary colors*/
 button {
     background-color:var(--primary);
     color:var(--primaryText);
+    font-family:var(--secondaryFont);
 }
 button.secondary {
     background-color:var(--secondary);
     color:var(--secondaryText);
 }
 
+/*For elements on page that should highlight when hovered*/
 .hover:hover {
     filter:brightness(130%);
 }
 
+/*Displays/hides and positions a modal-ish settings popup*/
 .displayed-menu {
     position:absolute;
     width:200px;
@@ -111,4 +135,38 @@ button.secondary {
 }
 .hidden-menu {
     display:none;
+}
+
+/*Smaller screen stacks search form and output on top of each other, limits forecast cards to 3 per row*/
+@media screen and (max-width:900px) {
+    main {
+        justify-content:center;
+    }
+    .left-section {
+        width:80%;
+    }
+    .right-section {
+        width:80%;
+    }
+    #forecast-area {
+        flex-wrap:wrap;
+    }
+    .forecast-card {
+        width:30%;
+        margin-bottom:15px;
+    }
+}
+
+/*Smallest screen wraps settings button down below title, and limits forecast cards to 2 per row*/
+@media screen and (max-width:630px) {
+    .forecast-card {
+        width:45%;
+    }
+    header {
+        height:var(--headerHeightSmallScreen);
+    }
+    header img {
+        display:inline-block;
+        position:initial;
+    }
 }
