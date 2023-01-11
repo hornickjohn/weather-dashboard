@@ -48,7 +48,7 @@ $('#search-form').on('submit', function(e) {
 
 //if successful, weather info will be printed to page
 function GetWeatherByName (cityName) {
-    fetch('http://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=5&appid=' + key)
+    fetch('https://api.openweathermap.org/geo/1.0/direct?q=' + cityName + '&limit=5&appid=' + key)
     .then(function (response) {
         return response.json();
     })
@@ -84,7 +84,7 @@ function GetWeatherByCoords(lat, lon, state) {
     }
 
     //fetch data from api
-    fetch('http://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + key + unitParam)
+    fetch('https://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + key + unitParam)
     .then(function (response) {
         return response.json();
     })
@@ -146,7 +146,7 @@ function GetWeatherByCoords(lat, lon, state) {
             //create icon display for card and add it
             var iconOut = $('<img>');
             iconOut.attr('style','display:block;');
-            iconOut.attr('src','http://openweathermap.org/img/wn/' + data.list[dataIndex].weather[0].icon + '.png');
+            iconOut.attr('src','https://openweathermap.org/img/wn/' + data.list[dataIndex].weather[0].icon + '.png');
             iconOut.attr('alt',data.list[dataIndex].weather[0].description);
             forecastCard.append(iconOut);
 
@@ -178,7 +178,7 @@ function GetWeatherByCoords(lat, lon, state) {
 
         //set weather icon and add it to name
         city.text(nameOutput);
-        weatherIcon.attr('src','http://openweathermap.org/img/wn/' + data.list[0].weather[0].icon + '.png');
+        weatherIcon.attr('src','https://openweathermap.org/img/wn/' + data.list[0].weather[0].icon + '.png');
         city.append(weatherIcon);
 
         //grab output paragraphs
