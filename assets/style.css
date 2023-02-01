@@ -34,7 +34,7 @@ header img {
     right:15px;
     top:15px;
 }
-header img:hover {
+header img:hover, .left-section button:hover {
     cursor:pointer;
 }
 
